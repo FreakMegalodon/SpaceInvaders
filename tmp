@@ -1,0 +1,14 @@
+"""
+def set_angulo_inicial():
+    
+    rd      = randint(30, 60)
+    x       = math.cos(rd)
+    y       = math.sin(rd)
+
+    rd      = randint(0, 100)
+    side_x  = -1 if rd < 50 else 1
+    rd      = randint(0,100)
+    side_y  = -1 if rd < 50 else 1
+    
+    return x * side_x, y * side_y
+"""

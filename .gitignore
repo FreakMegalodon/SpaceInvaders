@@ -1,0 +1,8 @@
+__pycache__/
+PPlay/__pycache__/
+PPlay/pygame/__pycache__/
+PPlay/pygame/docs/
+PPlay/pygame/examples/
+PPlay/pygame/tests/
+PPlay/pygame/threads/
+.vscode/

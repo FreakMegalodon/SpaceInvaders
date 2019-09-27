@@ -7,6 +7,7 @@ from    PPlay.keyboard  import  *
 from    PPlay.mouse     import  *
 from    GameStates      import  *
 from    Bullet          import  *
+from    Enemy           import  *
 #End Region
 
 class GS_GameRunning():
@@ -27,9 +28,17 @@ class GS_GameRunning():
         self.mouse      = self.janela.get_mouse()
         self.teclado    = self.janela.get_keyboard()
         self.set_images()
+        self.x_space    = 60
+        self.y_space    = 70    
+        self.max_enemy_timer = 3
+        self.move_x     = True
+        self.move_y     = False
+        self.create_enemy_matrix()
         return
     
     def on_state_enter(self):
+        self.enemy_timer    = 0.0
+        self.dir            = 1        
         return
     
     def on_state_exit(self):
@@ -45,7 +54,15 @@ class GS_GameRunning():
 
     def update(self):
         self.contador_bullet_time += self.janela.delta_time()
+        self.enemy_timer += self.janela.delta_time()
+        if self.enemy_timer >= self.max_enemy_timer:
+            self.move_enemies()
+            self.enemy_timer = 0
+
         for b in self.bullets_parent: b.update()
+        for line in self.enemy_parent:
+            for e in line:
+                e.update()
         self.destroy_bullets()
         return
 
@@ -66,21 +83,9 @@ class GS_GameRunning():
     def set_images(self):
         self.bg         = GameImage("Assets/images/game_background_night_01.png")
         self.player     = GameImage("Assets/images/tank.png")
-        ####
-        self.enemy1      = GameImage("Assets/images/enemy-01.png")
-        self.enemy2      = GameImage("Assets/images/enemy-02.png")
-        self.enemy2.set_position(150, self.enemy2.y)
-        self.enemy3      = GameImage("Assets/images/enemy-03.png")
-        self.enemy3.set_position(300, self.enemy3.y)
-        ####
         self.player.set_position(self.janela. width * 0.5, self.janela.height - 10 - self.player.height)
         self.game_images.append(self.bg)
         self.game_images.append(self.player)
-        ####
-        self.game_images.append(self.enemy1)
-        self.game_images.append(self.enemy2)
-        self.game_images.append(self.enemy3)
-        ####
         return 
     
     def new_bullet_object(self, x, y):
@@ -100,4 +105,53 @@ class GS_GameRunning():
                 self.game_images.remove(b.game_image)
                 self.bullets_parent.remove(b)
         return
+
+    def create_enemy_matrix(self):
+        x, y = 0, 0
+        self.enemy_parent = []
+        for i in range(4):
+            line    = []
+            for j in range(3):
+                en  = Enemy(self.janela, x, y, "")
+                line.append(en)
+                self.game_images.append(en.game_image)
+                x   += self.x_space
+                print("x: %d,y: %d"%(x, y))
+            self.enemy_parent.append(line)
+            x       = 0
+            y       += self.y_space
+        return
+    
+    def move_enemies(self):
+        #if not (greater_x == 360 or least_x == 0):
+        least_x, greater_x  = self.max_enemies_pos()
+        if (greater_x >= 360 and self.dir == 1) or (least_x == 0 and self.dir == -1):
+            self.move_down()
+            self.max_enemy_timer *= 0.5
+            self.dir *= -1
+            return
+        self.move_side(self.dir)
+        return
+
+    def max_enemies_pos(self):
+        min_x = self.janela.width + 200
+        max_x = 0
+        for i in range(len(self.enemy_parent)):
+            for j in range(len(self.enemy_parent[i])):
+                if self.enemy_parent[i][j] is not None:
+                    if self.enemy_parent[i][j].game_image.x < min_x     : min_x = self.enemy_parent[i][j].game_image.x
+                    elif self.enemy_parent[i][j].game_image.x > max_x   : max_x = self.enemy_parent[i][j].game_image.x
+        print("%d, %d"%(min_x, max_x))
+        return min_x, max_x
+    
+    def move_side(self, direction):
+        for line in self.enemy_parent:
+            for e in line:
+                e.game_image.x += self.x_space * direction
+
+    def move_down(self):
+        for line in self.enemy_parent:
+            for e in line:
+                e.game_image.y += self.y_space
+     
     #End Region

@@ -6,18 +6,19 @@ from    PPlay.gameimage import  *
 from    PPlay.keyboard  import  *
 from    PPlay.mouse     import  *
 from    GameStates      import  *
-
+from    Bullet          import  *
 #End Region
 
 class GS_GameRunning():
     game_images             = []
     menu_buttons            = dict()
-    ship                    = None
+    player                    = None
     velocity                = 300
     fps                     = 0
     contador                = 0
     tempo_transcorrido      = 0
     bullets                 = []
+    bullets_parent          = []
     contador_bullet_time    = 0
 
     def __init__(self, game_mngr):
@@ -26,7 +27,6 @@ class GS_GameRunning():
         self.mouse      = self.janela.get_mouse()
         self.teclado    = self.janela.get_keyboard()
         self.set_images()
-        #self.set_menu_buttons()
         return
     
     def on_state_enter(self):
@@ -39,13 +39,13 @@ class GS_GameRunning():
         if self.teclado.key_pressed("ESC"): self.game_mngr.change_state(GameStates.Menu)
         self.move()
         if (self.teclado.key_pressed("S") or self.teclado.key_pressed("SPACE")) and self.contador_bullet_time > 0.1:
-            self.new_bullet(self.ship.x + self.ship. width * 0.5, self.ship.y)
+            self.new_bullet_object(self.player.x + self.player. width * 0.5, self.player.y)
             self.contador_bullet_time = 0
         return
 
     def update(self):
         self.contador_bullet_time += self.janela.delta_time()
-        self.move_bullets()
+        for b in self.bullets_parent: b.update()
         self.destroy_bullets()
         return
 
@@ -64,40 +64,40 @@ class GS_GameRunning():
         return
     
     def set_images(self):
-        self.ship     = GameImage("Assets/images/ship.png")
-        self.ship.set_position(self.janela. width * 0.5, self.janela.height - 80)
-        self.game_images.append(self.ship)
+        self.bg         = GameImage("Assets/images/game_background_night_01.png")
+        self.player     = GameImage("Assets/images/tank.png")
+        ####
+        self.enemy1      = GameImage("Assets/images/enemy-01.png")
+        self.enemy2      = GameImage("Assets/images/enemy-02.png")
+        self.enemy2.set_position(150, self.enemy2.y)
+        self.enemy3      = GameImage("Assets/images/enemy-03.png")
+        self.enemy3.set_position(300, self.enemy3.y)
+        ####
+        self.player.set_position(self.janela. width * 0.5, self.janela.height - 10 - self.player.height)
+        self.game_images.append(self.bg)
+        self.game_images.append(self.player)
+        ####
+        self.game_images.append(self.enemy1)
+        self.game_images.append(self.enemy2)
+        self.game_images.append(self.enemy3)
+        ####
         return 
     
-    def new_bullet(self, x, y):
-        bullet = GameImage("Assets/images/bullet.png")
-        bullet.set_position(x  - bullet.width * 0.5, y)
-        self.bullets.append(bullet)
+    def new_bullet_object(self, x, y):
+        bullet = Bullet(self.janela, x, y)
+        self.bullets_parent.append(bullet)
+        self.game_images.append(bullet.game_image)
         return
-
+        
     def move(self):
-        #player1.y = max(0, min(mouse.Mouse.get_position(self=Mouse)[1], janela.height - player1.height))
-        if self.teclado.key_pressed("LEFT"):   self.ship.x = max(0, min(self.ship.x - (self.velocity * self.janela.delta_time()), self.janela.width - self.ship.width))
-        if self.teclado.key_pressed("RIGHT"): self.ship.x = max(0, min(self.ship.x + (self.velocity * self.janela.delta_time()), self.janela.width - self.ship.width))
+        if self.teclado.key_pressed("LEFT"):   self.player.x = max(0, min(self.player.x - (self.velocity * self.janela.delta_time()), self.janela.width - self.player.width))
+        if self.teclado.key_pressed("RIGHT"): self.player.x = max(0, min(self.player.x + (self.velocity * self.janela.delta_time()), self.janela.width - self.player.width))
         return
     
-    def move_bullet(self, b):
-        b.set_position(b.x, b.y - 500 * self.janela.delta_time())
-        return
-
-    def move_bullets(self):
-        for bullet in self.bullets:
-            self.move_bullet(bullet)
-        return
-    
-    def destroy_bullet(self, b):
-        if b.y < -b.height - 10:
-            self.bullets.remove(b)
-            print("bullet removida")
-        return
-
     def destroy_bullets(self):
-        for b in self.bullets:
-            self.destroy_bullet(b)
+        for b in self.bullets_parent:
+            if b.game_image.y < -b.game_image.height - 10:
+                self.game_images.remove(b.game_image)
+                self.bullets_parent.remove(b)
         return
     #End Region

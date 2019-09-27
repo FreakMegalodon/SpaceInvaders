@@ -1,5 +1,5 @@
 #Region Preprocessor
-import  DisplayMan      as dsman
+import  DisplayUtils     as dsman
 #End Region
 class GameStateBehavior:
     #Region Fields

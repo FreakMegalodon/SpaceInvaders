@@ -1,38 +1,34 @@
 #Region Preprocessor
 #from GameStateBehavior import GameStateBehavior
-import  DisplayUtils as dsman
-from enum import Enum
-from PPlay.gameimage import *
-from PPlay.keyboard import *
-from PPlay.mouse import *
-from GameStates import *
+import  DisplayUtils    as      dsman
+from    enum            import  Enum
+from    PPlay.gameimage import  *
+from    PPlay.keyboard  import  *
+from    PPlay.mouse     import  *
+from    GameStates      import  *
 
 #End Region
 
 class GS_GameRunning():
-    janela          = None
-    mouse = None
-    game_images     = []
-    menu_buttons    = dict()
-    ship = None
-    teclado         = None
-    mouse = None
-    velocity = 300
-    fps = 0
-    contador = 0
-    tempo_transcorrido = 0
-    bullets = []
-    contador_bullet_time = 0
+    game_images             = []
+    menu_buttons            = dict()
+    ship                    = None
+    velocity                = 300
+    fps                     = 0
+    contador                = 0
+    tempo_transcorrido      = 0
+    bullets                 = []
+    contador_bullet_time    = 0
 
-    def __init__(self, janela):
-        self.janela = janela
-        self.mouse  = janela.get_mouse()
+    def __init__(self, game_mngr):
+        self.game_mngr  = game_mngr
+        self.janela     = self.game_mngr.janela
+        self.mouse      = self.janela.get_mouse()
+        self.teclado    = self.janela.get_keyboard()
         self.set_images()
         #self.set_menu_buttons()
-        self.teclado  = self.janela.get_keyboard()
-        self.mouse = self.janela.get_mouse()
-
         return
+    
     def on_state_enter(self):
         return
     
@@ -40,8 +36,9 @@ class GS_GameRunning():
         return
 
     def process_inputs(self):
+        if self.teclado.key_pressed("ESC"): self.game_mngr.change_state(GameStates.Menu)
         self.move()
-        if self.teclado.key_pressed("S") and self.contador_bullet_time > 0.1:
+        if (self.teclado.key_pressed("S") or self.teclado.key_pressed("SPACE")) and self.contador_bullet_time > 0.1:
             self.new_bullet(self.ship.x + self.ship. width * 0.5, self.ship.y)
             self.contador_bullet_time = 0
         return
@@ -68,13 +65,13 @@ class GS_GameRunning():
     
     def set_images(self):
         self.ship     = GameImage("Assets/images/ship.png")
-        self.ship.set_position(self.janela. width / 2, self.janela.height - 80)
+        self.ship.set_position(self.janela. width * 0.5, self.janela.height - 80)
         self.game_images.append(self.ship)
         return 
     
     def new_bullet(self, x, y):
         bullet = GameImage("Assets/images/bullet.png")
-        bullet.set_position(x, y)
+        bullet.set_position(x  - bullet.width * 0.5, y)
         self.bullets.append(bullet)
         return
 
@@ -85,7 +82,7 @@ class GS_GameRunning():
         return
     
     def move_bullet(self, b):
-        b. set_position(b.x, b.y - 500 * self.janela.delta_time())
+        b.set_position(b.x, b.y - 500 * self.janela.delta_time())
         return
 
     def move_bullets(self):

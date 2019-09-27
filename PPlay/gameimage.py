@@ -26,16 +26,16 @@ class GameImage(gameobject.GameObject):
     Creates a GameImage from the specified file.
     The width and height are obtained based on the image file.
     """
-    def __init__(self, image_file):       
-        gameobject.GameObject.__init__(self)                        # Parent constructor must be called first
-        self.image  = pygame.image.load(image_file).convert_alpha() # Loads image from the source, converts to fast-blitting format
-        self.rect   = self.image.get_rect()                         # Gets the image pygame.Rect
-        self.width  = self.rect.width                               # Size
-        self.height = self.rect.height                              # Size
+    def __init__(self, image_file):
+        # Parent constructor must be called first
+        gameobject.GameObject.__init__(self)
+        self.set_image(image_file)
+        return
 
     """Draws the image on the screen"""
     def draw(self):
-        # A instance of the Window screen Window object must've been instatiated
+        # A instance of the Window screen
+        # Window object must've been instatiated
         # draw_rect is necessary to readjust the image position given .x and .y
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         window.Window.get_screen().blit(self.image, self.rect)
@@ -49,4 +49,15 @@ class GameImage(gameobject.GameObject):
     def collided_perfect(self, target):
         # Module import
         from . import collision
+
         return collision.Collision.collided_perfect(self, target)
+
+    def set_image(self, image_file):
+        # Loads image from the source, converts to fast-blitting format
+        self.image = pygame.image.load(image_file).convert_alpha()
+        # Gets the image pygame.Rect
+        self.rect = self.image.get_rect()
+        # Size
+        self.width = self.rect.width
+        self.height = self.rect.height
+        return

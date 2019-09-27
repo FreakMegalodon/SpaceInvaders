@@ -4,6 +4,8 @@ import pygame
 from pygame.locals import *
 from . import keyboard
 from . import mouse
+import os
+os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (62,30)
 
 # Initializes pygame's modules
 pygame.init()

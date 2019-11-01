@@ -89,7 +89,7 @@ class GS_GameRunning():
         return 
     
     def new_bullet_object(self, x, y):
-        bullet = Bullet(self.janela, x, y)
+        bullet = Bullet(self.game_mngr, x, y)
         self.bullets_parent.append(bullet)
         self.game_images.append(bullet.game_image)
         return

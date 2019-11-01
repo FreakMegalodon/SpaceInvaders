@@ -1,5 +1,5 @@
 Nome=Space Invaders
-Largura_janela=394
+Largura_janela=420
 Altura_janela=700
 Player1_image=Assets/player1.png
 Player2_image=Assets/player2.png

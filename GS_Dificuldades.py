@@ -65,7 +65,7 @@ class GS_Dificuldades():
         return
     
     def set_menu_images(self):
-        bg     = GameImage("Assets/bg.png")
+        bg     = GameImage("Assets/images/bg.png")
         logo   = GameImage("Assets/logo.png")
         logo.x = (self.janela.width / 2) - (logo. width / 2)
         logo.y = 25.0

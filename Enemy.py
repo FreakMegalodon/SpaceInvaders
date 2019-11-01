@@ -16,9 +16,9 @@ class Enemy:
     def __init__(self, game, x, y, type, path):
         self.game           = game
         self.janela         = self.game.janela
+        self.stamina        = 50
         self.game_image     = GameImage(path)
         self.game_image.set_position(x, y)
-        self.stamina        = 50
         return
     #End Region
     #Region Methods

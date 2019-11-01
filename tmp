@@ -41,3 +41,10 @@ def set_angulo_inicial():
             self.move_down()
             self.move_x = True
             self.move_y = False
+
+[] aleatorio
+[] vidas--
+[x] pontuacao
+
+[]ranking
+[]entrada por console

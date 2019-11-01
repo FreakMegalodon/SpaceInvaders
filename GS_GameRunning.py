@@ -2,6 +2,7 @@
 #from GameStateBehavior import GameStateBehavior
 import  DisplayUtils            as      dsman
 from    enum                    import  Enum
+import  random
 from    PPlay.gameimage         import  *
 from    PPlay.keyboard          import  *
 from    PPlay.mouse             import  *
@@ -34,12 +35,16 @@ class GS_GameRunning():
         self.move_x             = True
         self.move_y             = False
         self.score              = 0
+        self.lives              = 3
+        self.max_y              = 0
         self.create_enemy_matrix()
         return
     
     def on_state_enter(self):
-        self.enemy_timer    = 0.0
-        self.dir            = 1        
+        self.enemy_timer                = 0.0
+        self.dir                        = 1
+        self.contador_enemy_bullet_time = 0.0
+        self.max_enemy_bullet_time      = 3
         return
     
     def on_state_exit(self):
@@ -67,6 +72,7 @@ class GS_GameRunning():
             for e in line:
                 e.update()
         self.destroy_bullets()
+        self.enemy_fire()
         return
 
     def render(self):
@@ -79,7 +85,7 @@ class GS_GameRunning():
             self.tempo_transcorrido = 0
         dsman.drawStack(self.game_images)
         self.janela.draw_text(str(self.fps), 30, 30, size=30, color=(255, 255, 255), font_name="Arial", bold=False, italic=False)
-        self.janela.draw_text(str(self.score), 350, 30, size=30, color=(255, 255, 255), font_name="Arial", bold=False, italic=False)
+        self.janela.draw_text(str(self.score) + " | " + str(self.lives), 30, 60, size=30, color=(255, 255, 255), font_name="Arial", bold=False, italic=False)
         self.janela.update()
         return
     
@@ -87,16 +93,20 @@ class GS_GameRunning():
         self.bg         = ScrollableBackground(self, "Assets/images/game_background_night_01.png", 25)
         self.stars_f    = ScrollableBackground(self, "Assets/images/game_background_night_02.png", 40)
         self.stars_b    = ScrollableBackground(self, "Assets/images/game_background_night_03.png", 50)
-        self.player     = Player(self)
+        self.player     = Player(self.game_mngr)
+        self.game_images.append(self.player.game_image)
         return 
     
     def new_bullet_object(self, x, y):
-        bullet = Bullet(self.game_mngr, x, y)
+        bullet = Bullet(self.game_mngr, x, y, 0)
         self.bullets_parent.append(bullet)
         self.game_images.append(bullet.game_image)
         return
         
     def fire(self):
+        """
+        Tiro do jogador, pelo menos, a cada self.contador_bullet_time segundos
+        """
         if (self.teclado.key_pressed("S") or self.teclado.key_pressed("SPACE")) and self.contador_bullet_time > 0.1:
             self.new_bullet_object(self.player.game_image.x + self.player.game_image.width * 0.5, self.player.game_image.y)
             self.contador_bullet_time = 0
@@ -104,13 +114,33 @@ class GS_GameRunning():
 
     def destroy_bullets(self):
         for b in self.bullets_parent:
-            if b.game_image.y < -b.game_image.height - 10:
+            if (b.game_image.y < -b.game_image.height - 10) or (b.game_image. y > self.janela.height + 30):
                 self.game_images.remove(b.game_image)
                 self.bullets_parent.remove(b)
         return
 
+    def enemy_fire(self):
+        """
+        Tiro dos inimigos, de posicoes aleatorias, pelo menos, a cada self.contador_enemy_bullet_time
+        """
+        self.contador_enemy_bullet_time += self.delta_time
+        if self.contador_enemy_bullet_time >= self.max_enemy_bullet_time:
+            # select random enemy
+            random.seed()
+            #spawn enemy_bullet
+            line = random.choice(self.enemy_parent)
+            en = random.choice(line)
+            while en is None: en = random.choice()
+            bullet = Bullet(self.game_mngr, en.game_image.x + self.x_space / 2, en.game_image.y + self.y_space, 1)
+            self.bullets_parent.append(bullet)
+            self.game_images.append(bullet.game_image)
+            # zero counter
+            self.contador_enemy_bullet_time = 0
+        
+        return
+
     def create_enemy_matrix(self):
-        import random
+
         random.seed()
         #enemy_types = [EnemyType.Enemy_one, EnemyType.Enemy_two, EnemyType.Enemy_tree]
         enemy_types                         = dict()
@@ -131,6 +161,7 @@ class GS_GameRunning():
             self.enemy_parent.append(line)
             x       = 0
             y       += self.y_space
+            self.max_y = y + self.y_space
         return
     
     def move_enemies(self):
@@ -151,7 +182,7 @@ class GS_GameRunning():
                 if self.enemy_parent[i][j] is not None:
                     if self.enemy_parent[i][j].game_image.x < min_x     : min_x = self.enemy_parent[i][j].game_image.x
                     elif self.enemy_parent[i][j].game_image.x > max_x   : max_x = self.enemy_parent[i][j].game_image.x
-        print("%d, %d"%(min_x, max_x))
+        #print("%d, %d"%(min_x, max_x))
         return min_x, max_x
     
     def move_side(self, direction):
@@ -163,5 +194,12 @@ class GS_GameRunning():
         for line in self.enemy_parent:
             for e in line:
                 e.game_image.y += self.y_space
+        self.max_y += self.y_space
+        return
      
+    def decrease_lives(self):
+         self.lives -= 1
+         if self.lives <= 0:
+            self.game_mngr.change_state(GameStates.Menu)
+         return
     #End Region

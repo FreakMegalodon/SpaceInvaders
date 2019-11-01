@@ -18,12 +18,25 @@ class Enemy:
         self.janela         = self.game.janela
         self.game_image     = GameImage(path)
         self.game_image.set_position(x, y)
-        game.game_images.append(self.game_image)
-        
+        self.stamina        = 50
         return
     #End Region
     #Region Methods
     def update(self):
         return
+    def hit(self):
+        self.stamina -= 10
+        self.add_score(100)
+        if self.stamina <= 0:
+             self.death()
+        return
+
+    def death(self):
+        self.game_image.set_position(self.game_image.x, 1000)
+        self.add_score(400)
+        return
     
+    def add_score(self, val):
+        self.game.game_states[self.game.current_state].score += val
+        return
     #End Region

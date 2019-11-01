@@ -33,6 +33,7 @@ class GS_GameRunning():
         self.max_enemy_timer    = 3
         self.move_x             = True
         self.move_y             = False
+        self.score              = 0
         self.create_enemy_matrix()
         return
     
@@ -78,6 +79,7 @@ class GS_GameRunning():
             self.tempo_transcorrido = 0
         dsman.drawStack(self.game_images)
         self.janela.draw_text(str(self.fps), 30, 30, size=30, color=(255, 255, 255), font_name="Arial", bold=False, italic=False)
+        self.janela.draw_text(str(self.score), 350, 30, size=30, color=(255, 255, 255), font_name="Arial", bold=False, italic=False)
         self.janela.update()
         return
     
@@ -121,8 +123,9 @@ class GS_GameRunning():
             line    = []
             e_type  = random.choice(list(enemy_types.keys()))
             for j in range(3):                
-                en  = Enemy(self, x, y, e_type, enemy_types[e_type])
+                en  = Enemy(self.game_mngr, x, y, e_type, enemy_types[e_type])
                 line.append(en)
+                self.game_images.append(en.game_image)
                 x   += self.x_space
                 #print("x: %d,y: %d"%(x, y))
             self.enemy_parent.append(line)

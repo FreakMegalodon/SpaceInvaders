@@ -22,9 +22,9 @@ class GS_GameRunning():
     bullets_parent          = []
     contador_bullet_time    = 0
 
-    def __init__(self, game_mngr):
-        self.game_mngr          = game_mngr
-        self.janela             = self.game_mngr.janela
+    def __init__(self, game):
+        self.game               = game
+        self.janela             = self.game.janela
         self.mouse              = self.janela.get_mouse()
         self.teclado            = self.janela.get_keyboard()
         self.delta_time         = 0
@@ -51,7 +51,7 @@ class GS_GameRunning():
         return
 
     def process_inputs(self):
-        if self.teclado.key_pressed("ESC"): self.game_mngr.change_state(GameStates.Menu)
+        if self.teclado.key_pressed("ESC"): self.game.change_state(GameStates.Menu)
         self.fire()
         return
 
@@ -93,12 +93,12 @@ class GS_GameRunning():
         self.bg         = ScrollableBackground(self, "Assets/images/game_background_night_01.png", 25)
         self.stars_f    = ScrollableBackground(self, "Assets/images/game_background_night_02.png", 40)
         self.stars_b    = ScrollableBackground(self, "Assets/images/game_background_night_03.png", 50)
-        self.player     = Player(self.game_mngr)
+        self.player     = Player(self.game)
         self.game_images.append(self.player.game_image)
         return 
     
     def new_bullet_object(self, x, y):
-        bullet = Bullet(self.game_mngr, x, y, 0)
+        bullet = Bullet(self.game, x, y, 0)
         self.bullets_parent.append(bullet)
         self.game_images.append(bullet.game_image)
         return
@@ -131,7 +131,7 @@ class GS_GameRunning():
             line = random.choice(self.enemy_parent)
             en = random.choice(line)
             while en is None: en = random.choice()
-            bullet = Bullet(self.game_mngr, en.game_image.x + self.x_space / 2, en.game_image.y + self.y_space, 1)
+            bullet = Bullet(self.game, en.game_image.x + self.x_space / 2, en.game_image.y + self.y_space, 1)
             self.bullets_parent.append(bullet)
             self.game_images.append(bullet.game_image)
             # zero counter
@@ -153,7 +153,7 @@ class GS_GameRunning():
             line    = []
             e_type  = random.choice(list(enemy_types.keys()))
             for j in range(3):                
-                en  = Enemy(self.game_mngr, x, y, e_type, enemy_types[e_type])
+                en  = Enemy(self.game, x, y, e_type, enemy_types[e_type])
                 line.append(en)
                 self.game_images.append(en.game_image)
                 x   += self.x_space
@@ -200,6 +200,6 @@ class GS_GameRunning():
     def decrease_lives(self):
          self.lives -= 1
          if self.lives <= 0:
-            self.game_mngr.change_state(GameStates.Menu)
+            self.game.change_state(GameStates.Menu)
          return
     #End Region

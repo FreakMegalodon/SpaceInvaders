@@ -23,7 +23,7 @@ class Player:
 
     
     def death(self):
-        self.game.game_states[self.game.current_state].decrease_lives()
+        self.game.current_game_state.decrease_lives()
         self.current_state = Player_State_Raising(self.game, self)
         return
     #End Region

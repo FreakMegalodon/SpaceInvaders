@@ -15,9 +15,9 @@ class GS_Dificuldades():
     buttons     = dict()
     #End Region
     #Region Constructors
-    def __init__(self, game_mngr):
-        self.game_mngr  = game_mngr
-        self.janela     = self.game_mngr.janela
+    def __init__(self, game):
+        self.game       = game
+        self.janela     = self.game.janela
         self.mouse      = self.janela.get_mouse()
         self.teclado    = self.janela.get_keyboard()
         self.min_time   = 0.5
@@ -50,12 +50,12 @@ class GS_Dificuldades():
                 if dificuldade is not None:
                     self.timer = 0
                     if dificuldade == Dificuldades.Back:
-                        self.game_mngr.change_state(GameStates.Menu)
+                        self.game.change_state(GameStates.Menu)
                         print("Debug: Back")
                         return
                     else:
-                        self.game_mngr.change_difficulty(dificuldade)
-                        self.game_mngr.change_state(GameStates.Menu)
+                        self.game.change_difficulty(dificuldade)
+                        self.game.change_state(GameStates.Menu)
                         print("Debug: Dificuldade %s selecionada"%str(dificuldade))
         return
 

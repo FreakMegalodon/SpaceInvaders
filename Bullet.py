@@ -14,11 +14,11 @@ class Bullet:
         if bullet_type == 0:
             self.game_image     = GameImage("Assets/images/bullet.png")
             self.velocity       = -500.0
-            self.current_state      = Bullet_State_Start(self.game.game_states[game.current_state], self)
+            self.current_state      = Bullet_State_Start(self.game.current_game_state, self)
         else:
             self.game_image     = GameImage("Assets/images/bullet.png")
             self.velocity       = 300.0
-            self.current_state  = Bullet_State_Enemy(self.game.game_states[game.current_state], self)
+            self.current_state  = Bullet_State_Enemy(self.game.current_game_state, self)
 
         self.start_position = [x, y]        
         self.game_image.set_position(x - self.game_image.width * 0.5, y - self.game_image.height)
@@ -32,7 +32,7 @@ class Bullet:
         return
         
     def change_state(self):
-        self.current_state = Bullet_State_Check_Collision(self.game.game_states[self.game.current_state], self)
+        self.current_state = Bullet_State_Check_Collision(self.game.current_game_state, self)
         return
     #End Region
 

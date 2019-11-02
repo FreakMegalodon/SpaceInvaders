@@ -37,6 +37,6 @@ class Enemy:
         return
     
     def add_score(self, val):
-        self.game.game_states[self.game.current_state].score += val
+        self.game.current_game_state.score += val
         return
     #End Region

@@ -1,3 +1,4 @@
+
 from PPlay.gameimage import *
 import math
 # Classe base do jogador
@@ -6,6 +7,10 @@ class ScrollableBackground():
     #End Region
     #Region Constructors
     def __init__(self, game, path, velocity):
+#
+#TODO Game aponta para game_state, nao para game
+#
+
         self.game           = game
         self.janela         = game.janela
         self.game_image     = GameImage(path)

@@ -22,9 +22,9 @@ class GS_Menu():
     buttons     = dict()
     #End Region
     #Region Constructors
-    def __init__(self, game_mngr):
-        self.game_mngr  = game_mngr
-        self.janela     = self.game_mngr.janela
+    def __init__(self, game):
+        self.game       = game
+        self.janela     = self.game.janela
         self.mouse      = self.janela.get_mouse()
         self.teclado    = self.janela.get_keyboard()
         self.min_time   = 0.5
@@ -56,7 +56,7 @@ class GS_Menu():
             if self.timer >= self.min_time:
                 tmp_state = btn.on_mouse_click(clicked)
                 if tmp_state is not None:
-                    self.game_mngr.change_state(tmp_state)
+                    self.game.change_state(tmp_state)
         return
 
     def render(self):

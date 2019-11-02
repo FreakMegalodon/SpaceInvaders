@@ -57,7 +57,7 @@ class GS_GameRunning():
 
     def process_inputs(self):
         if self.teclado.key_pressed("ESC"): self.game.change_state(GameStates.Menu)
-        self.fire()
+        #self.fire()
         return
 
     def update(self):
@@ -108,16 +108,16 @@ class GS_GameRunning():
         self.bullets_parent.append(bullet)
         self.game_images.append(bullet.game_image)
         return
-        
+    """
     def fire(self):
-        """
+        
         Tiro do jogador, pelo menos, a cada self.contador_bullet_time segundos
-        """
+        
         if (self.teclado.key_pressed("S") or self.teclado.key_pressed("SPACE")) and self.contador_bullet_time > 0.1:
             self.new_bullet_object(self.player.game_image.x + self.player.game_image.width * 0.5, self.player.game_image.y)
             self.contador_bullet_time = 0
         return
-
+    """
     def destroy_bullets(self):
         """
         Destroi os tiros fora dos limites da tela

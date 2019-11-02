@@ -18,8 +18,8 @@ class SubMenus(Enum):
 
 class GS_Menu():
     #Region Fields
-    game_images = []
-    buttons     = dict()
+    game_images     = []
+    buttons_parent  = []
     #End Region
     #Region Constructors
     def __init__(self, game):
@@ -27,21 +27,21 @@ class GS_Menu():
         self.janela     = self.game.janela
         self.mouse      = self.janela.get_mouse()
         self.teclado    = self.janela.get_keyboard()
+        self.is_running = True
         self.min_time   = 0.5
-
-        self.set_menu_images()
-        self.set_menu_buttons()
         return
     #End Region
     #Region Methods
     def on_state_enter(self):
-        #self.set_menu_images()
-        #self.set_menu_buttons()
+        self.set_menu_images()
+        self.set_menu_buttons()
         self.timer = 0
         return
     
     def on_state_exit(self):
-        #self.buttons.clear()
+        self.is_running = False
+        self.buttons_parent.clear()
+        self.game_images.clear()
         return
 
     def process_inputs(self):
@@ -49,14 +49,15 @@ class GS_Menu():
         return
 
     def update(self):
-        self.timer  += self.janela.delta_time()
-        clicked     = self.mouse.is_button_pressed(1)
-        for btn in self.buttons.values():
-            btn.on_mouse_over(self.mouse.get_position())
-            if self.timer >= self.min_time:
-                tmp_state = btn.on_mouse_click(clicked)
-                if tmp_state is not None:
-                    self.game.change_state(tmp_state)
+        if self.is_running:
+            self.timer  += self.janela.delta_time()
+            clicked     = self.mouse.is_button_pressed(1)
+            for btn in self.buttons_parent:
+                btn.on_mouse_over(self.mouse.get_position())
+                if self.timer >= self.min_time:
+                    tmp_state = btn.on_mouse_click(clicked)
+                    if tmp_state is not None:
+                        self.game.change_state(tmp_state)
         return
 
     def render(self):
@@ -74,19 +75,16 @@ class GS_Menu():
         return 
     
     def set_menu_buttons(self):
-        x_tela                              = self.janela.width * 0.5
-        y_tela                              = self.janela.height * 0.5
-        dist_btn                            = 70
-        self.buttons[SubMenus.NewGame]      = Button("Assets/images/Btn_01.png", "Assets/images/Btn_hover_01.png", x_tela, y_tela, GameStates.Running)
-        y_tela                              += dist_btn
-        self.buttons[SubMenus.Dificuldades] = Button("Assets/images/Btn_03.png", "Assets/images/Btn_hover_03.png", x_tela, y_tela, GameStates.Dificuldades)
-        y_tela                              += dist_btn
-        self.buttons[SubMenus.Rankings]     = Button("Assets/images/Btn_05.png", "Assets/images/Btn_hover_05.png", x_tela, y_tela, GameStates.Ranking)
-        y_tela                              += dist_btn
-        self.buttons[SubMenus.Exit]         = Button("Assets/images/Btn_07.png", "Assets/images/Btn_hover_07.png", x_tela, y_tela, GameStates.Exit)
-        self.game_images.append(self.buttons[SubMenus.NewGame].game_image)
-        self.game_images.append(self.buttons[SubMenus.Dificuldades].game_image)
-        self.game_images.append(self.buttons[SubMenus.Rankings].game_image)
-        self.game_images.append(self.buttons[SubMenus.Exit].game_image)        
+        x_tela      = self.janela.width * 0.5
+        y_tela      = self.janela.height * 0.5
+        dist_btn    = 70
+        self.buttons_parent.append(Button("Assets/images/Btn_01.png", "Assets/images/Btn_hover_01.png", x_tela, y_tela, GameStates.Running))
+        y_tela      += dist_btn
+        self.buttons_parent.append(Button("Assets/images/Btn_03.png", "Assets/images/Btn_hover_03.png", x_tela, y_tela, GameStates.Dificuldades))
+        y_tela      += dist_btn
+        self.buttons_parent.append(Button("Assets/images/Btn_05.png", "Assets/images/Btn_hover_05.png", x_tela, y_tela, GameStates.Ranking))
+        y_tela      += dist_btn
+        self.buttons_parent.append(Button("Assets/images/Btn_07.png", "Assets/images/Btn_hover_07.png", x_tela, y_tela, GameStates.Exit))
+        for b in self.buttons_parent: self.game_images.append(b.game_image)
         return
     #End Region

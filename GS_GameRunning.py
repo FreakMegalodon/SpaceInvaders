@@ -27,6 +27,7 @@ class GS_GameRunning():
         self.janela             = self.game.janela
         self.mouse              = self.janela.get_mouse()
         self.teclado            = self.janela.get_keyboard()
+        self.is_running         = True
         self.delta_time         = 0
         self.set_images()
         self.x_space            = 60
@@ -37,7 +38,6 @@ class GS_GameRunning():
         self.score              = 0
         self.lives              = 3
         self.max_y              = 0
-        self.create_enemy_matrix()
         return
     
     def on_state_enter(self):
@@ -45,9 +45,14 @@ class GS_GameRunning():
         self.dir                        = 1
         self.contador_enemy_bullet_time = 0.0
         self.max_enemy_bullet_time      = 3
+        self.create_enemy_matrix()
         return
     
     def on_state_exit(self):
+        self.is_running = False
+        self.enemy_parent.clear()
+        self.bullets_parent.clear()
+        self.game_images.clear()
         return
 
     def process_inputs(self):
@@ -56,23 +61,24 @@ class GS_GameRunning():
         return
 
     def update(self):
-        self.delta_time = self.janela.delta_time()
-        self.bg.update()
-        self.stars_f.update()
-        self.stars_b.update()
-        self.player.update()
-        self.contador_bullet_time   += self.delta_time 
-        self.enemy_timer            += self.delta_time 
-        if self.enemy_timer >= self.max_enemy_timer:
-            self.move_enemies()
-            self.enemy_timer = 0
+        if self.is_running:
+            self.delta_time = self.janela.delta_time()
+            self.bg.update()
+            self.stars_f.update()
+            self.stars_b.update()
+            self.player.update()
+            self.contador_bullet_time   += self.delta_time 
+            self.enemy_timer            += self.delta_time 
+            if self.enemy_timer >= self.max_enemy_timer:
+                self.move_enemies()
+                self.enemy_timer = 0
 
-        for b in self.bullets_parent: b.update()
-        for line in self.enemy_parent:
-            for e in line:
-                e.update()
-        self.destroy_bullets()
-        self.enemy_fire()
+            for b in self.bullets_parent: b.update()
+            for line in self.enemy_parent:
+                for e in line:
+                    e.update()
+            self.destroy_bullets()
+            self.enemy_fire()
         return
 
     def render(self):
@@ -113,6 +119,9 @@ class GS_GameRunning():
         return
 
     def destroy_bullets(self):
+        """
+        Destroi os tiros fora dos limites da tela
+        """
         for b in self.bullets_parent:
             if (b.game_image.y < -b.game_image.height - 10) or (b.game_image. y > self.janela.height + 30):
                 self.game_images.remove(b.game_image)

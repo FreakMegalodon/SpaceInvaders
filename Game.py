@@ -21,6 +21,7 @@ class Game():
 #
 #        self.game_states[GameStates.Menu]           = GS_Menu(self)
 #
+        self.get_ranking()
         self.change_state(GameStates.Menu)
         return
     #End Region
@@ -38,16 +39,25 @@ class Game():
         if self.current_state is not None                   : self.current_game_state.on_state_exit()
         self.current_state = new_state
         if self.current_state == GameStates.Dificuldades    : self.current_game_state = GS_Dificuldades(self)
-        if self.current_state == GameStates.Exit            : pass
-        if self.current_state == GameStates.Intro           : pass
-        if self.current_state == GameStates.Menu            : self.current_game_state = GS_Menu(self)
-        if self.current_state == GameStates.Paused          : pass
-        if self.current_state == GameStates.Ranking         : pass
-        if self.current_state == GameStates.Running         : self.current_game_state = GS_GameRunning(self)
+        elif self.current_state == GameStates.Exit          : pass
+        elif self.current_state == GameStates.Intro         : pass
+        elif self.current_state == GameStates.Menu          : self.current_game_state = GS_Menu(self)
+        elif self.current_state == GameStates.Paused        : pass
+        elif self.current_state == GameStates.Ranking       : pass
+        elif self.current_state == GameStates.Running       : self.current_game_state = GS_GameRunning(self)
+        elif self.current_state == GameStates.GameOver      : self.current_game_state = GS_GameOver(self)
         self.current_game_state.on_state_enter()
         return
     
     def change_difficulty(self, difficulty):
         self.difficulty = difficulty
+        return
+    
+    def get_ranking(self):
+        file        = "ranking.rkf"
+        data        = open(file, "r", encoding="utf-8")
+        last_line   = data.readlines()[-1].split("|")
+        self.least_ranking_position = int(last_line[0])
+        data.close()
         return
     #End Region

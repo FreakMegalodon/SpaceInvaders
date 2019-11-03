@@ -7,4 +7,5 @@ class GameStates(Enum):
     Paused          = 4
     Dificuldades    = 8
     Ranking         = 16
+    GameOver        = 32
     Exit            = 512

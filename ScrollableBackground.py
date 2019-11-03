@@ -15,8 +15,8 @@ class ScrollableBackground():
         self.janela         = game.janela
         self.game_image     = GameImage(path)
         self.copy           = GameImage(path)
-        self.game.game_images.append(self.game_image)
-        self.game.game_images.append(self.copy)
+        #self.game.game_images.append(self.game_image)
+        #self.game.game_images.append(self.copy)
         self.velocity       = velocity
         self.copy.set_position(0, -self.game_image.height)
         return

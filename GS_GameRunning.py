@@ -298,5 +298,5 @@ class Running_State_Input():
             data    = open(file, "w", encoding="utf-8")
             for line in ranking: data.write(str(line[0]) + "|" + line[1])
             data.close()
-            self.game.change_state(GameStates.Menu)
+            self.game.change_state(GameStates.Ranking)
         return

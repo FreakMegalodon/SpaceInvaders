@@ -6,6 +6,7 @@ from    GS_Menu         import  *
 from    GameStates      import  *
 from    GS_GameRunning  import  *
 from    GS_Dificuldades import  *
+from    GS_Rankings     import  *
 from    Dificuldades    import  *
 #End Region
 class Game():
@@ -43,7 +44,7 @@ class Game():
         elif self.current_state == GameStates.Intro         : pass
         elif self.current_state == GameStates.Menu          : self.current_game_state = GS_Menu(self)
         elif self.current_state == GameStates.Paused        : pass
-        elif self.current_state == GameStates.Ranking       : pass
+        elif self.current_state == GameStates.Ranking       : self.current_game_state = GS_Rankings(self)
         elif self.current_state == GameStates.Running       : self.current_game_state = GS_GameRunning(self)
         elif self.current_state == GameStates.GameOver      : self.current_game_state = GS_GameOver(self)
         self.current_game_state.on_state_enter()
@@ -61,3 +62,7 @@ class Game():
         data.close()
         return
     #End Region
+
+class Difficult_Values:
+    def __init__(self):
+      self.player_bullet_mod = {Dificuldades.Easy: 2, Dificuldades.Normal: 1, Dificuldades.Hard: 0.75, Dificuldades.Hell: 0.5}

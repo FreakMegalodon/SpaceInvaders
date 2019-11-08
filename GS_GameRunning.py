@@ -8,6 +8,7 @@ from    PPlay.mouse             import  *
 from    GameStates              import  *
 from    Bullet                  import  *
 from    Enemy                   import  *
+from    Bonus_Enemy             import  *
 from    ScrollableBackground    import  *
 from    Player                  import  *
 #End Region
@@ -60,6 +61,8 @@ class GS_GameRunning():
         self.contador_enemy_bullet_time = 0.0
         self.max_enemy_bullet_time      = 3
         self.create_enemy_matrix()
+        self.bonus_enemy    = Bonus_Enemy(self.game, 0, 0, EnemyType.Enemy_bonus, "Assets/images/enemy-01.png", 10, 200, 3000)
+        self.bonus_image    = [self.bonus_enemy.game_image]
         return
     
     def on_state_exit(self):
@@ -236,7 +239,7 @@ class GS_GameRunning():
     def decrease_lives(self):
          self.lives -= 1
          if self.lives <= 0:
-            self.game_over()
+            self.current_state = Running_State_GameOver(self.game, self)
          return
 
     #End Region
@@ -245,10 +248,8 @@ class Runnuning_State_Playing():
     def __init__(self, game, running):
         self.game           = game
         self.running        = running
-        self.bonus_time     = 2.0
-        self.bonus_dir      = 1
-        self.bonus_enemy    = Enemy(self.game, -100, 0, EnemyType.Enemy_bonus, "Assets/images/enemy-01.png", 10, 200, 3000)
-        self.bonus_image    = [self.bonus_enemy.game_image]
+#        self.bonus_enemy    = Bonus_Enemy(self.game, 0, 0, EnemyType.Enemy_bonus, "Assets/images/enemy-01.png", 10, 200, 3000)
+#        self.bonus_image    = [self.bonus_enemy.game_image]
 
     def do_update(self):
         self.running.bg.update()
@@ -256,7 +257,7 @@ class Runnuning_State_Playing():
         self.running.stars_b.update()
         self.running.player.update()
         self.running.count_fps()
-
+        self.running.bonus_enemy.update()
         for b in self.running.bullets_parent: b.update()
 
         for line in self.running.enemy_parent:
@@ -268,12 +269,11 @@ class Runnuning_State_Playing():
 
         self.running.destroy_bullets()
         self.running.enemy_fire()
-        self.update_bonus()
         return
 
     def do_render(self):
         dsman.drawStack(self.running.game_images_running)
-        dsman.drawStack(self.bonus_image)
+        dsman.drawStack(self.running.bonus_image)
         return
 
     def enemies_are_alive(self):
@@ -281,38 +281,6 @@ class Runnuning_State_Playing():
             for enem in line: 
                 if enem.alive: return True
         return False
-
-    def update_bonus(self):
-        self.move_bonus()
-        
-        #if self.bonus_image[0].x < self.game.janela.width or self.bonus_image[0].x > -300:
-            
-        #else:
-            #self.spawn_bonus()
-            #print("Debug: Bonus released: %d"%self.bonus_image[0].x)
-        #if len(self.bonus_image) == 0:
-        #    self.bonus_time -= self.game.janela.delta_time()
-        #    if self.bonus_time <= 0:
-        #        self.bonus_time = 2.0
-        #        self.spawn_bonus()
-        #else:
-            #print(self.bonus[0].x)
-        return
-
-    def spawn_bonus(self):
-        dir = random.randint(0, 100)
-        if dir < 50:
-            self.bonus_dir = 1
-            start_pos = -300
-        else:
-            self.bonus_dir = -1
-            start_pos = self.game.janela.width + 300
-        return
-
-    def move_bonus(self):
-        self.bonus_image[0].set_position(self.bonus_image[0].x + (100 * self.game.janela.delta_time() * self.bonus_dir), 0)
-        return
-
 
 class Running_State_GameOver():
     def __init__(self, game, running):

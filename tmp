@@ -51,3 +51,41 @@ def set_angulo_inicial():
 
 []ranking
 []entrada por console
+
+
+##################################################
+Bonus
+
+    #def update_bonus(self):
+        #self.move_bonus()
+        
+        #if self.bonus_image[0].x < self.game.janela.width or self.bonus_image[0].x > -300:
+            
+        #else:
+            #self.spawn_bonus()
+            #print("Debug: Bonus released: %d"%self.bonus_image[0].x)
+        #if len(self.bonus_image) == 0:
+        #    self.bonus_time -= self.game.janela.delta_time()
+        #    if self.bonus_time <= 0:
+        #        self.bonus_time = 2.0
+        #        self.spawn_bonus()
+        #else:
+            #print(self.bonus[0].x)
+        #return
+
+#    def spawn_bonus(self):
+#        dir = random.randint(0, 100)
+#        if dir < 50:
+#            self.bonus_dir = 1
+#            start_pos = -300
+#        else:
+#            self.bonus_dir = -1
+#            #start_pos = self.game.janela.width + 300
+#        return
+
+    #def move_bonus(self):
+    #    self.bonus_image[0].set_position(self.bonus_image[0].x + (100 * self.game.janela.delta_time() * self.bonus_dir), 0)
+    #    return
+
+End Bonus
+#################################################

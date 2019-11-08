@@ -14,7 +14,7 @@ class Bullet:
         if bullet_type == 0:
             self.game_image     = GameImage("Assets/images/bullet.png")
             self.velocity       = -500.0
-            self.current_state      = Bullet_State_Start(self.game.current_game_state, self)
+            self.current_state  = Bullet_State_Start(self.game.current_game_state, self)
         else:
             self.game_image     = GameImage("Assets/images/bullet.png")
             self.velocity       = 300.0
@@ -65,9 +65,9 @@ class Bullet_State_Check_Collision:
                     self.bullet.game_image.set_position(0, -50)
                     return
         #if len(self.game_state.current_state.bonus_image) > 0:
-        if self.bullet.game_image.collided(self.game_state.current_state.bonus_enemy.game_image):
+        
+        if self.bullet.game_image.collided(self.game_state.bonus_enemy.game_image):
             self.game_state.current_state.bonus_enemy.hit()
-            if not self.game_state.current_state.bonus_enemy.alive: self.game_state.current_state.spawn_bonus()
             self.bullet.game_image.set_position(0, -50)
 
         return

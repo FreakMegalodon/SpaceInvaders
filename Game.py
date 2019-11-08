@@ -66,3 +66,5 @@ class Game():
 class Difficult_Values:
     def __init__(self):
       self.player_bullet_mod = {Dificuldades.Easy: 2, Dificuldades.Normal: 1, Dificuldades.Hard: 0.75, Dificuldades.Hell: 0.5}
+
+#TODO check all janela refs

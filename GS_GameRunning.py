@@ -61,7 +61,7 @@ class GS_GameRunning():
         self.contador_enemy_bullet_time = 0.0
         self.max_enemy_bullet_time      = 3
         self.create_enemy_matrix()
-        self.bonus_enemy    = Bonus_Enemy(self.game, 0, 0, EnemyType.Enemy_bonus, "Assets/images/enemy-01.png", 10, 200, 3000)
+        self.bonus_enemy    = Bonus_Enemy(self.game, 0, 0, EnemyType.Enemy_bonus, "Assets/images/enemy-04.png", 10, 200, 3000)
         self.bonus_image    = [self.bonus_enemy.game_image]
         return
     

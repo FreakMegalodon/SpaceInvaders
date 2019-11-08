@@ -25,13 +25,27 @@ class GS_GameRunning():
         self.game               = game
         self.janela             = self.game.janela
         #self.mouse              = self.janela.get_mouse()
-        self.teclado            = self.janela.get_keyboard()
+        self.teclado            = self.game.janela.get_keyboard()
         self.is_running         = True
         self.delta_time         = 0
         self.set_images()
+
+        self.enemy_types                         = dict()
+        self.enemy_types[EnemyType.Enemy_one]    = "Assets/images/enemy-01.png"
+        self.enemy_types[EnemyType.Enemy_two]    = "Assets/images/enemy-02.png"
+        self.enemy_types[EnemyType.Enemy_tree]   = "Assets/images/enemy-03.png"
+
         self.x_space            = 60
-        self.y_space            = 70    
-        self.max_enemy_timer    = 3
+        self.y_space            = 70
+        self.en_lines           = 1
+        self.max_lines          = 4
+        self.en_columns         = 3
+        self.max_columns        = 5
+        self.enemie_count       = 3
+        self.max_enemies_count  = 20
+
+        self.default_en_timer   = 3
+        self.max_enemy_timer    = self.default_en_timer
         self.move_x             = True
         self.move_y             = False
         self.score              = 0
@@ -163,17 +177,13 @@ class GS_GameRunning():
 
         random.seed()
         #enemy_types = [EnemyType.Enemy_one, EnemyType.Enemy_two, EnemyType.Enemy_tree]
-        enemy_types                         = dict()
-        enemy_types[EnemyType.Enemy_one]    = "Assets/images/enemy-01.png"
-        enemy_types[EnemyType.Enemy_two]    = "Assets/images/enemy-02.png"
-        enemy_types[EnemyType.Enemy_tree]   = "Assets/images/enemy-03.png"
-        x, y                                = 0, 0
+        x, y                                = 0, self.y_space
         self.enemy_parent = []
-        for i in range(4):
+        for i in range(self.en_lines):
             line    = []
-            e_type  = random.choice(list(enemy_types.keys()))
-            for j in range(3):                
-                en  = Enemy(self.game, x, y, e_type, enemy_types[e_type])
+            e_type  = random.choice(list(self.enemy_types.keys()))
+            for j in range(self.en_columns):               
+                en  = Enemy(self.game, x, y, e_type, self.enemy_types[e_type],30, 100, 400)
                 line.append(en)
                 self.game_images_running.append(en.game_image)
                 x   += self.x_space
@@ -182,13 +192,19 @@ class GS_GameRunning():
             x       = 0
             y       += self.y_space
             self.max_y = y + self.y_space
+        self.en_columns += 1
+        if self.en_columns > self.max_columns:
+            self.en_columns = 3
+            self.en_lines   = min(self.en_lines + 1, self.max_lines)
+        self.max_enemy_timer = self.default_en_timer
+        self.default_en_timer *= 0.95
         return
     
     def move_enemies(self):
         least_x, greater_x  = self.max_enemies_pos()
         if (greater_x >= 360 and self.dir == 1) or (least_x == 0 and self.dir == -1):
             self.move_down()
-            self.max_enemy_timer *= 0.5
+            self.max_enemy_timer *= 0.75
             self.dir *= -1
             return
         self.move_side(self.dir)
@@ -227,8 +243,12 @@ class GS_GameRunning():
 
 class Runnuning_State_Playing():
     def __init__(self, game, running):
-        self.game       = game
-        self.running    = running
+        self.game           = game
+        self.running        = running
+        self.bonus_time     = 2.0
+        self.bonus_dir      = 1
+        self.bonus_enemy    = Enemy(self.game, -100, 0, EnemyType.Enemy_bonus, "Assets/images/enemy-01.png", 10, 200, 3000)
+        self.bonus_image    = [self.bonus_enemy.game_image]
 
     def do_update(self):
         self.running.bg.update()
@@ -248,10 +268,12 @@ class Runnuning_State_Playing():
 
         self.running.destroy_bullets()
         self.running.enemy_fire()
+        self.update_bonus()
         return
 
     def do_render(self):
         dsman.drawStack(self.running.game_images_running)
+        dsman.drawStack(self.bonus_image)
         return
 
     def enemies_are_alive(self):
@@ -259,6 +281,38 @@ class Runnuning_State_Playing():
             for enem in line: 
                 if enem.alive: return True
         return False
+
+    def update_bonus(self):
+        self.move_bonus()
+        
+        #if self.bonus_image[0].x < self.game.janela.width or self.bonus_image[0].x > -300:
+            
+        #else:
+            #self.spawn_bonus()
+            #print("Debug: Bonus released: %d"%self.bonus_image[0].x)
+        #if len(self.bonus_image) == 0:
+        #    self.bonus_time -= self.game.janela.delta_time()
+        #    if self.bonus_time <= 0:
+        #        self.bonus_time = 2.0
+        #        self.spawn_bonus()
+        #else:
+            #print(self.bonus[0].x)
+        return
+
+    def spawn_bonus(self):
+        dir = random.randint(0, 100)
+        if dir < 50:
+            self.bonus_dir = 1
+            start_pos = -300
+        else:
+            self.bonus_dir = -1
+            start_pos = self.game.janela.width + 300
+        return
+
+    def move_bonus(self):
+        self.bonus_image[0].set_position(self.bonus_image[0].x + (100 * self.game.janela.delta_time() * self.bonus_dir), 0)
+        return
+
 
 class Running_State_GameOver():
     def __init__(self, game, running):

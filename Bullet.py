@@ -64,6 +64,12 @@ class Bullet_State_Check_Collision:
                     enemy.hit()
                     self.bullet.game_image.set_position(0, -50)
                     return
+        #if len(self.game_state.current_state.bonus_image) > 0:
+        if self.bullet.game_image.collided(self.game_state.current_state.bonus_enemy.game_image):
+            self.game_state.current_state.bonus_enemy.hit()
+            if not self.game_state.current_state.bonus_enemy.alive: self.game_state.current_state.spawn_bonus()
+            self.bullet.game_image.set_position(0, -50)
+
         return
 
 class Bullet_State_Enemy:

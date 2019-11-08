@@ -1,5 +1,6 @@
-from PPlay.gameimage import *
-from enum import Enum
+from    PPlay.gameimage import  *
+from    enum            import  Enum
+from    GameStates      import  *
 
 class EnemyType(Enum):
     No_enemy    = 0
@@ -19,11 +20,13 @@ class Enemy:
         self.stamina        = 50
         self.game_image     = GameImage(path)
         self.game_image.set_position(x, y)
+        self.alive          = True
         return
     #End Region
     #Region Methods
     def update(self):
         return
+
     def hit(self):
         self.stamina -= 10
         self.add_score(100)
@@ -33,7 +36,11 @@ class Enemy:
 
     def death(self):
         self.game_image.set_position(self.game_image.x, 1000)
+        self.alive = False
         self.add_score(400)
+        if not self.game.current_game_state.current_state.enemies_are_alive():
+            print(self.game.current_game_state)
+            self.game.current_game_state.change_substate(1)
         return
     
     def add_score(self, val):

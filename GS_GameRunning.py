@@ -79,7 +79,19 @@ class GS_GameRunning():
         self.janela.draw_text(str(self.score) + " | " + str(self.lives), 30, 60, size=30, color=(255, 255, 255), font_name="Arial", bold=False, italic=False)
         self.janela.update()
         return
-    
+   
+    def change_substate(self, ind):
+        """
+        0: Runnuning_State_Playing
+        1: Running_State_GameOver
+        2: Running_State_Input
+        """
+        if ind == 0: self.current_state = Runnuning_State_Playing(self.game, self)
+        if ind == 1: self.current_state = Running_State_GameOver(self.game, self)
+        if ind == 2: self.current_state = Running_State_Input(self.game, self)
+
+
+
     def set_images(self):
         self.bg         = ScrollableBackground(self, "Assets/images/game_background_night_01.png", 25)
         self.stars_f    = ScrollableBackground(self, "Assets/images/game_background_night_02.png", 40)
@@ -125,7 +137,9 @@ class GS_GameRunning():
             random.seed()
             line                            = random.choice(self.enemy_parent)
             en                              = random.choice(line)
-            while en is None: en = random.choice()
+            while not en.alive:
+                line    = random.choice(self.enemy_parent)
+                en      = random.choice(line)
             bullet                          = Bullet(self.game, en.game_image.x + self.x_space / 2, en.game_image.y + self.y_space, 1)
             self.bullets_parent.append(bullet)
             self.game_images_running.append(bullet.game_image)
@@ -206,8 +220,9 @@ class GS_GameRunning():
     def decrease_lives(self):
          self.lives -= 1
          if self.lives <= 0:
-            self.current_state = Running_State_GameOver(self.game, self)
+            self.game_over()
          return
+
     #End Region
 
 class Runnuning_State_Playing():
@@ -239,6 +254,12 @@ class Runnuning_State_Playing():
         dsman.drawStack(self.running.game_images_running)
         return
 
+    def enemies_are_alive(self):
+        for line in self.running.enemy_parent:
+            for enem in line: 
+                if enem.alive: return True
+        return False
+
 class Running_State_GameOver():
     def __init__(self, game, running):
         self.game       = game
@@ -250,7 +271,10 @@ class Running_State_GameOver():
 
     def do_update(self):
         self.timer += self.game.janela.delta_time()
-        if self.go_index == len(self.running.game_over): self.running.current_state = Running_State_Input(self.game, self.running)
+        if self.go_index == len(self.running.game_over):
+            print("Debug: wait for input")
+            #self.running.current_state = Running_State_Input(self.game, self.running)
+            self.running.change_substate(2)
         if self.timer >= self.transition:
             self.running.game_images_game_over.append(self.running.game_over[self.go_index])
             self.go_index   += 1
@@ -299,4 +323,5 @@ class Running_State_Input():
             for line in ranking: data.write(str(line[0]) + "|" + line[1])
             data.close()
             self.game.change_state(GameStates.Ranking)
+        else: self.game.change_state(GameStates.Menu)
         return
